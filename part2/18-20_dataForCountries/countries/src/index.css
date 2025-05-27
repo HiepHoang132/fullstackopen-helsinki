@@ -1,0 +1,16 @@
+input {
+    margin-left: 10px;
+}
+
+.flag {
+    height: 200px;
+    width: 200px;
+}
+
+.countries {
+    padding: 10px 0;
+}
+
+.showBtn {
+    margin-left: 7px;
+}
