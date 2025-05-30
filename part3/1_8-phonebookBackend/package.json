@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "phonebook_backend",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,6 @@
   "description": "",
   "dependencies": {
     "express": "^5.1.0",
-    "mongoose": "^8.15.1"
+    "morgan": "^1.10.0"
   }
 }
