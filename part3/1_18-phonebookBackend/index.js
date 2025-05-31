@@ -38,20 +38,18 @@ app.get('/api/persons/:id', (req, res, next) => {
     const id = req.params.id
 
     Person.findById(id).then(person => {
-        if(person){
-            return res.json(person)
+        if(!person){
+            return res.status(404).end()
         }
 
-        res.statusMessage = `Not found person with id ${id} `
-        res.status(404).end()
+        return res.json(person)
     }).catch(error => next(error))
 })
 
 app.post('/api/persons', (req, res) => {
-    const body = req.body
-    const {name, number} = body
+    const {name, number} = req.body
 
-    if(!body || Object.keys(body).length === 0){
+    if(!name && ! number){
         return res.status(400).json({
             error: "name and body missing"
         })
@@ -69,24 +67,62 @@ app.post('/api/persons', (req, res) => {
         })
     }
 
-    // 3.6
-    const existingPerson = persons.find(p => p.name.toLowerCase().trim() === name.toLowerCase().trim())
+    const person = new Person({
+        name: name,
+        number: number
+    })
 
-    if(existingPerson){
-        return res.status(400).json({
-            error: "name must be unique"
-        })
-    }
-
-    const person = {
-        ...body,
-        id: generateId()
-    }
-
-    persons = persons.concat(person)
-    res.json(person)
+    person.save().then(newPerson => {
+        return res.json(newPerson)
+    })
 })
 
-const port = process.env.PORT || 3001
+app.put('/api/persons/:id', (req, res, next) => {
+    const id = req.params.id
+    const {name, number} = req.body
+    const updatedPerson = {
+        name: name,
+        number: number
+    }
+
+    Person.findByIdAndUpdate(
+        id,
+        updatedPerson, {
+            new: true, // return updated doc
+            runValidators: true,
+            context: 'query'
+    }).then(returnedPerson => {
+        if(!returnedPerson) return res.status(404).end()
+        res.json(returnedPerson)
+    }).catch(error => next(error))
+})
+
+app.delete('/api/persons/:id', (req, res, next) => {
+    const id = req.params.id
+
+    Person.findByIdAndDelete(id).then(() => {
+        res.status(204).end()
+    }).catch(error => next(error))
+})
+
+const unknownEndpoint = (req, res) => {
+    return res.status(404).send({error: `unknown endpoint`})
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, req, res, next) => {
+    console.log(error.message)
+
+    if(error.name === 'CastError'){
+        return res.status(400).send({error: "malformatted id"})
+    }
+
+    next(error)
+}
+
+app.use(errorHandler)
+
+const port = process.env.PORT
 app.listen(port)
 console.log(`Server running on port ${port}`)
