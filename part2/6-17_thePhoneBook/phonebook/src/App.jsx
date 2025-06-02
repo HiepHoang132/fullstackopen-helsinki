@@ -104,9 +104,10 @@ const App = () => {
             .then(returnedPerson => {
                 setPersons(persons.concat(returnedPerson))
                 showNotification(`Added ${newName}`)
-            })
-
-        resetForm()
+                resetForm()
+            }).catch(error => {
+                showNotification(error.response.data.error, "error")
+        })
     }
 
     const handleDelete = (id, name) => {
