@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import Note from './components/Note'
+import Note from './components/Note.jsx'
 import noteService from "./services/notes.js"
 import Notification from "./components/Notification.jsx";
 import Footer from "./components/Footer.jsx";
