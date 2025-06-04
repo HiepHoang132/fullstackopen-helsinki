@@ -1,10 +1,10 @@
 const _ = require('lodash')
 
-const dummy = (blogs) => {
+const dummy = () => {
   return 1
 }
 
-const totalLikes = blogs => {
+const totalLikes = (blogs) => {
   if(blogs.length === 0) return 0
 
   if(blogs.length === 1){
