@@ -29,10 +29,10 @@ test('blog posts are returned with id property instead of _id', async () => {
 
 test('a valid blog can be added', async () => {
   const newBlog = {
-    title: 'Type wars',
-    author: 'Robert C. Martin',
-    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
-    likes: 2
+    title: 'Scaling Microservices with Kubernetes',
+    author: 'Alice Johnson',
+    url: 'https://techinsights.dev/k8s-microservices-guide',
+    likes: 5
   }
 
   await api
@@ -93,6 +93,37 @@ describe('creating blogs', () => {
     await testInvalidBug(newBlog)
   })
 })
+
+describe('deleting a blog', () => {
+  test('deletes a blog successfully with a valid id', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    const titles = blogsAtEnd.map(b => b.title)
+    assert(!titles.includes(blogToDelete.title))
+
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+  })
+})
+
+test('successfully updates the likes of a blog post', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToUpdate = blogsAtStart[0]
+
+  const returnedBlog = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send({ likes: 9 })
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  assert.strictEqual(returnedBlog.body.likes, 9)
+})
+
 
 after(async () => {
   await mongoose.connection.close()
