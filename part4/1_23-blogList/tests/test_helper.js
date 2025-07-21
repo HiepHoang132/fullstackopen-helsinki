@@ -1,4 +1,8 @@
+const supertest = require('supertest')
+const app = require('../app')
+const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const listWithOneBlog = [
   {
@@ -62,13 +66,49 @@ const initialBlogs = [
   }
 ]
 
+const initialUsers = [
+  {
+    username: 'root',
+    name: 'Superuser',
+    password: 'test1234' // pretend hashed password
+  },
+  {
+    username: 'SayMyName',
+    name: 'Heisenberg',
+    password: 'methamphetamine'
+  },
+  {
+    username: 'tester',
+    name: 'Test User',
+    password: '789test'
+  }
+]
+
 const blogsInDb = async () => {
   const blogs = await Blog.find({})
   return blogs.map(blog => blog.toJSON())
 }
 
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(u => u.toJSON())
+}
+
+const loginAndGetToken = async() => {
+  const loginResult = await api.post('/api/login')
+    .send({
+      username: 'SayMyName',
+      password: 'methamphetamine'
+    })
+
+  return loginResult.body.token
+}
+
 module.exports = {
   listWithOneBlog,
   initialBlogs,
-  blogsInDb
+  initialUsers,
+  blogsInDb,
+  usersInDb,
+  loginAndGetToken
 }

@@ -12,9 +12,20 @@ const errorHandler = (error, req, res, next) => {
   } else if(error.name === 'ValidationError'){
     const messages = Object.values(error.errors).map(e => e.message)
     return res.status(400).json({ error: messages.join(',') })
+  } else if(error.name === 'MongoServerError' && error.code === 11000){
+    return res.status(400).json({ error: 'username must be unique' })
   }
 
   next(error)
 }
 
-module.exports = { unknownEndpoint, errorHandler }
+const userExtractor = (req, res, next) => {
+  const authorization = req.get('authorization')
+  if(authorization && authorization.startsWith('Bearer ')){
+    req.token = authorization.substring(7)
+  }
+
+  next()
+}
+
+module.exports = { unknownEndpoint, errorHandler, userExtractor }
