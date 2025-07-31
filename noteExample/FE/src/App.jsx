@@ -68,6 +68,11 @@ const App = () => {
         }
     }
 
+    const handleLogout = () => {
+        setUser(null)
+        window.localStorage.removeItem('loggedNoteAppUser')
+    }
+
     const loginForm = () => {
         return (
             <form onSubmit={handleLogin}>
@@ -129,7 +134,13 @@ const App = () => {
         <div>
             <h1>Notes</h1>
             <Notification message={errorMessage}/>
-            {user === null && loginForm()}
+            {!user && loginForm()}
+            {user && (
+                <div>
+                    {user.username} logged in
+                    <button onClick={handleLogout}>Logout</button>
+                </div>
+            )}
             <div>
                 <button onClick={() => setShowAll(!showAll)}>
                     show {showAll ? 'important' : 'all'}
