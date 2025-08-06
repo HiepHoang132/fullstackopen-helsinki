@@ -55,6 +55,7 @@ const App = () => {
             setUsername("")
             setPassword("")
         } catch (error){
+            console.log(error)
             setErrorMessage("Wrong credentials")
             setTimeout(() => {
                 setErrorMessage(null)
@@ -101,6 +102,7 @@ const App = () => {
                 setNotes(notes.map(n => n.id === id ? returnedNote : n))
             })
             .catch(error => {
+                console.log(error)
                 setErrorMessage(
                     `Note '${note.content}' was already removed from server`
                 )
