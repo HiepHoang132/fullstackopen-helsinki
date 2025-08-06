@@ -3,15 +3,15 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from "./components/Notification.jsx";
+import BlogForm from "./components/BlogForm.jsx";
+import Togglable from "./components/Togglable.jsx";
+import BlogContent from "./components/BlogContent.jsx";
 
-const App = () => {
+const App = compareFn => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [title, setTitle] = useState("")
-  const [author, setAuthor] = useState("")
-  const [url, setUrl] = useState("")
   const [message, setMessage] = useState(null)
   const [success, setSuccess] = useState(false)
 
@@ -55,16 +55,40 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogUser')
   }
 
-  const handleCreateBlog = async (event) => {
-    event.preventDefault()
+  const addBlog = (blogObject) => {
     try{
-      const newBlog = await blogService.create({title, author, url})
+      blogService
+          .create(blogObject)
+          .then(newBlog => {
+            setBlogs([...blogs, newBlog])
+            showNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`, true)
+          })
+    } catch (error){
+      setMessage(error.message)
+    }
+  }
 
-      showNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`, true)
-      setBlogs([...blogs, newBlog])
-      setTitle("")
-      setAuthor("")
-      setUrl("")
+  const updateBlog = async (id, blogObject) => {
+    try{
+      blogService
+          .update(id, blogObject)
+          .then(newBlog => {
+            setBlogs(blogs.map(blog => blog.id !== id ? blog : newBlog))
+            showNotification("Liked!", true)
+          })
+    } catch (error){
+      setMessage(error.message)
+    }
+  }
+
+  const deleteBlog = async (id) => {
+    try{
+      blogService
+          .deleteBlog(id)
+          .then(() => {
+            setBlogs(blogs.filter(blog => blog.id !== id))
+            showNotification("Deleted!", true)
+          })
     } catch (error){
       setMessage(error.message)
     }
@@ -110,40 +134,20 @@ const App = () => {
 
   const blogForm = () => {
     return (
-        <>
-          <form onSubmit={handleCreateBlog}>
-            <div>
-              title:
-              <input
-                  type="text"
-                  value={title}
-                  onChange={({target}) => setTitle(target.value)}
-                  name="Title"
-              />
-            </div>
-            <div>
-              author:
-              <input
-                  type="text"
-                  value={author}
-                  onChange={({target}) => setAuthor(target.value)}
-                  name="Author"
-              />
-            </div>
-            <div>
-              url:
-              <input
-                  type="text"
-                  value={url}
-                  onChange={({target}) => setUrl(target.value)}
-                  name="Url"
-              />
-            </div>
-            <button type="submit">create</button>
-          </form>
-        </>
+      <Togglable>
+        <BlogForm createBlog={addBlog}/>
+      </Togglable>
     )
   }
+
+  const sortDescending = () => {
+    setBlogs([...blogs].sort((a, b) => b.likes - a.likes))
+  }
+
+  const sortAscending = () => {
+    setBlogs([...blogs].sort((a, b) => a.likes - b.likes))
+  }
+
   if(user === null){
     loginForm()
   }
@@ -154,20 +158,15 @@ const App = () => {
       <Notification message={message} success={success}/>
       {!user && loginForm()}
       {user && (
-          <>
             <div className="user-header">
               {user.username} logged in
               <button onClick={handleLogout}>logout</button>
             </div>
-            <div>
-              <h2>create new</h2>
-              {blogForm()}
-            </div>
-          </>
       )}
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
+      <button onClick={sortDescending}>Highest likes</button>
+      <button onClick={sortAscending}>Lowest likes</button>
+      {user && blogForm()}
+      <BlogContent blogs={blogs} updateBlog={updateBlog} deleteBlog={deleteBlog}/>
     </div>
   )
 }

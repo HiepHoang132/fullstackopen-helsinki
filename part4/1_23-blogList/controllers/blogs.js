@@ -38,7 +38,7 @@ blogRouter.post('/', async (req, res) => {
     author: author,
     url: url,
     likes: likes,
-    user: user._id
+    user: user
   })
 
   user.blogs = user.blogs.concat(blog)
@@ -78,7 +78,8 @@ blogRouter.put('/:id', async (req, res, next) => {
     req.params.id,
     { likes },
     { new: true, runValidators: true, context:'query' }
-  )
+  ).populate('user')
+
   if(!updatedBlog) return res.status(404).end()
   res.json(updatedBlog)
 })
