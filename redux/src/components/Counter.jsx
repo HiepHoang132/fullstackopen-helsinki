@@ -1,8 +1,21 @@
 import {useDispatch, useSelector} from "react-redux";
+import {decrement, increment, reset} from "../reducers/countReducer.js";
 
 const Counter = () => {
-    const value = useSelector(state => state.counter)
+    const value = useSelector(state => state.count)
     const dispatch = useDispatch()
+
+    const plus = () => {
+        dispatch(increment())
+    }
+
+    const minus = () => {
+        dispatch(decrement())
+    }
+
+    const zero = () => {
+        dispatch(reset())
+    }
 
     return (
         <>
@@ -10,9 +23,9 @@ const Counter = () => {
                 {value}
             </div>
             <div>
-                <button onClick={() => dispatch({type: 'INCREMENT'})}>plus</button>
-                <button onClick={() => dispatch({type: 'DECREMENT'})}>minus</button>
-                <button onClick={() => dispatch({type: 'ZERO'})}>zero</button>
+                <button onClick={plus}>plus</button>
+                <button onClick={minus}>minus</button>
+                <button onClick={zero}>zero</button>
             </div>
         </>
     )
