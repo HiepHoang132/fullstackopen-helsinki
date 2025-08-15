@@ -5,11 +5,13 @@ import {Provider} from "react-redux";
 import noteReducer from "./reducers/noteReducer.js";
 import {configureStore} from "@reduxjs/toolkit";
 import countReducer from "./reducers/countReducer.js";
+import filterReducer from "./reducers/filterReducer.js";
 
 const store = configureStore({
     reducer: {
         note: noteReducer,
-        count: countReducer
+        count: countReducer,
+        filter: filterReducer
     }
 })
 
