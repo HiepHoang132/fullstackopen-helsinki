@@ -1,4 +1,4 @@
-import {createSelector, createSlice} from "@reduxjs/toolkit";
+import {createSelector, createSlice, current} from "@reduxjs/toolkit";
 
 const initialState = [
     {
@@ -26,6 +26,7 @@ const noteSlice = createSlice({
             })
         },
         toggleImportanceOf(state, action) {
+            console.log(current(state))
             const id = action.payload
             const noteToChange = state.find(note => note.id === id)
             const changedNote = {
