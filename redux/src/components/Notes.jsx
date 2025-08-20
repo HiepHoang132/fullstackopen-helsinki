@@ -1,5 +1,5 @@
 import {useDispatch, useSelector} from "react-redux";
-import {toggleImportanceOf} from "../reducers/noteReducer.js";
+import {toggleNoteImportance} from "../reducers/noteReducer.js";
 
 const Notes = () => {
     const dispatch = useDispatch()
@@ -13,7 +13,7 @@ const Notes = () => {
     })
 
     const toggleImportance = (id) => {
-        dispatch(toggleImportanceOf(id))
+        dispatch(toggleNoteImportance(id))
     }
 
     return (

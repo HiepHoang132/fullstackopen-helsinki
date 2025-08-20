@@ -1,0 +1,19 @@
+{
+  "notes": [
+    {
+      "content": "the app state is in redux store",
+      "important": false,
+      "id": "1"
+    },
+    {
+      "content": "state changes are made with actions",
+      "important": true,
+      "id": "2"
+    },
+    {
+      "id": "de8a",
+      "content": "new note added to backend",
+      "important": true
+    }
+  ]
+}
