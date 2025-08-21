@@ -7,13 +7,18 @@
     },
     {
       "content": "state changes are made with actions",
-      "important": true,
+      "important": false,
       "id": "2"
     },
     {
       "id": "de8a",
       "content": "new note added to backend",
       "important": true
+    },
+    {
+      "id": "e7ef",
+      "content": "hello",
+      "important": false
     }
   ]
 }

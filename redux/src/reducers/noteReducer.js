@@ -8,7 +8,7 @@ const noteSlice = createSlice({
         setNotes(state, action) {
             return action.payload
         },
-        createNote(state, action) {
+        appendNote(state, action) {
             state.push(action.payload)
         },
         updateNote(state, action) {
@@ -17,6 +17,20 @@ const noteSlice = createSlice({
         }
     }
 })
+
+export const initializeNotes = () => {
+    return async dispatch => {
+        const notes = await noteService.getAll()
+        dispatch(setNotes(notes))
+    }
+}
+
+export const createNote = (content) => {
+    return async dispatch => {
+        const newNote = await noteService.createNew(content)
+        dispatch(appendNote(newNote))
+    }
+}
 
 export const selectImportantNotes = createSelector(
     state => state.note,
@@ -32,5 +46,6 @@ export const toggleNoteImportance = (id) => {
     }
 }
 
-export const {setNotes, createNote, updateNote} = noteSlice.actions
+export const {setNotes, appendNote, updateNote} = noteSlice.actions
+
 export default noteSlice.reducer
