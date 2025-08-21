@@ -5,23 +5,25 @@ const anecdoteSlice = createSlice({
     name: 'anecdote',
     initialState: [],
     reducers: {
-        vote(state, action) {
-            const id = action.payload
-            return state.map(a => a.id !== id ? a : {...a, votes: a.votes + 1})
-        },
-        add(state, action) {
-            state.push(action.payload)
-        },
         setAnecdotes(state, action) {
             return action.payload
+        },
+        appendAnecdote(state, action) {
+            state.push(action.payload)
+        },
+        updateAnecdote(state, action) {
+            const updatedAnecdote = action.payload
+            return state.map(a => a.id !== updatedAnecdote.id ? a : updatedAnecdote)
         }
     }
 })
 
-export const sortAnecdote = createSelector(
-    state => state.anecdote,
-    anecdotes => [...anecdotes].sort((a, b) => b.votes - a.votes)
-)
+export const initializeAnecdotes = () => {
+    return async dispatch => {
+        const anecdotes = await anecdoteService.getAll()
+        dispatch(setAnecdotes(anecdotes))
+    }
+}
 
 export const createAnecdote = (content) => {
     return async dispatch => {
@@ -29,10 +31,27 @@ export const createAnecdote = (content) => {
             content: content,
             votes: 0
         })
-        dispatch(add(newAnecdote))
+        dispatch(appendAnecdote(newAnecdote))
     }
 }
 
-export const {vote, add, setAnecdotes} = anecdoteSlice.actions
+export const vote = (id) => {
+    return async (dispatch, getState) => {
+        const anecdote = await getState().anecdote.find(a => a.id === id)
+        const votedAnecdote = {
+            ...anecdote,
+            votes: anecdote.votes + 1
+        }
+        const changedAnecdote = await anecdoteService.vote(id, votedAnecdote)
+        dispatch(updateAnecdote(changedAnecdote))
+    }
+}
+
+export const sortAnecdote = createSelector(
+    state => state.anecdote,
+    anecdotes => [...anecdotes].sort((a, b) => b.votes - a.votes)
+)
+
+export const {setAnecdotes, appendAnecdote, updateAnecdote} = anecdoteSlice.actions
 
 export default anecdoteSlice.reducer

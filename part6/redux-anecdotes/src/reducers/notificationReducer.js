@@ -11,7 +11,7 @@ const notificationSlice = createSlice({
 
 let timeoutId
 
-export const notifyWithTimeout = (message, seconds) => {
+export const setNotification = (message, seconds) => {
     return dispatch => {
         if (timeoutId) {
             clearTimeout(timeoutId)
